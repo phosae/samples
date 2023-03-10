@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+go-http-range
+
+/media/*.mkv
+/media/*.mp4
+/media/*.m4a
