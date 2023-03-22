@@ -1,0 +1,36 @@
+# docker buildx build --platform linux/amd64,linux/arm64 -t zengxu/sleep:rust -f Dockerfile.static --push .
+FROM messense/rust-musl-cross:x86_64-musl AS build-amd64
+WORKDIR /workspace
+
+COPY Cargo.toml Cargo.toml
+COPY src/ src/
+
+RUN --mount=type=cache,target=/usr/local/cargo/git/db \
+    --mount=type=cache,target=/usr/local/cargo/registry/cache \
+    --mount=type=cache,target=/usr/local/cargo/registry/index \
+    RUSTFLAGS='-C target-feature=+crt-static' cargo build --target x86_64-unknown-linux-musl --release
+
+RUN cp /workspace/target/x86_64-unknown-linux-musl/release/sleep /usr/local/bin/sleep-amd64-static
+
+FROM messense/rust-musl-cross:aarch64-musl AS build-arm64
+WORKDIR /workspace
+
+COPY Cargo.toml Cargo.toml
+COPY src/ src/
+
+RUN --mount=type=cache,target=/usr/local/cargo/git/db \
+    --mount=type=cache,target=/usr/local/cargo/registry/cache \
+    --mount=type=cache,target=/usr/local/cargo/registry/index \
+    RUSTFLAGS='-C target-feature=+crt-static' cargo build --target aarch64-unknown-linux-musl --release
+
+RUN cp /workspace/target/aarch64-unknown-linux-musl/release/sleep /usr/local/bin/sleep-arm64-static
+
+FROM debian:bullseye as build
+COPY --from=build-amd64 /usr/local/bin/sleep-amd64-static /sleep-amd64-static
+COPY --from=build-arm64 /usr/local/bin/sleep-arm64-static /sleep-arm64-static
+
+FROM scratch
+ARG TARGETARCH
+COPY --from=build /sleep-${TARGETARCH}-static /sleep
+ENTRYPOINT ["/sleep"]
+
