@@ -2,7 +2,7 @@
 
 dev, build in Docker
 
-```
+```sh
 docker run -p 5173:5173 --rm -it -v $PWD:/web -w /web node:18.16.0-bullseye-slim bash
 ```
 

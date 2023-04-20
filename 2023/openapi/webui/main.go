@@ -91,7 +91,7 @@ func main() {
 			return
 		}
 
-		viewURL := fmt.Sprintf("http://localhost:8000/%s/%s", viewReq.UI, viewReq.ApiFile)
+		viewURL := fmt.Sprintf("/%s/%s", viewReq.UI, viewReq.ApiFile)
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
 		http.Redirect(w, r, viewURL, http.StatusFound)
@@ -101,7 +101,7 @@ func main() {
 	http.Handle("/elements/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(r.URL.Path, "/elements/")
 		spec := parts[len(parts)-1]
-		spec = fmt.Sprintf("http://localhost:8000/spec/%s", spec)
+		spec = fmt.Sprintf("/spec/%s", spec)
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
@@ -111,7 +111,7 @@ func main() {
 	http.Handle("/rapidoc/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(r.URL.Path, "/rapidoc/")
 		spec := parts[len(parts)-1]
-		spec = fmt.Sprintf("http://localhost:8000/spec/%s", spec)
+		spec = fmt.Sprintf("/spec/%s", spec)
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
@@ -121,7 +121,7 @@ func main() {
 	http.Handle("/swagger/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(r.URL.Path, "/swagger/")
 		spec := parts[len(parts)-1]
-		spec = fmt.Sprintf("http://localhost:8000/spec/%s", spec)
+		spec = fmt.Sprintf("/spec/%s", spec)
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
@@ -131,7 +131,7 @@ func main() {
 	http.Handle("/redoc/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(r.URL.Path, "/redoc/")
 		spec := parts[len(parts)-1]
-		spec = fmt.Sprintf("http://localhost:8000/spec/%s", spec)
+		spec = fmt.Sprintf("/spec/%s", spec)
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "*")

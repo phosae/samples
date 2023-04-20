@@ -51,7 +51,7 @@ export default {
       // axios then func
       // so if we don't redirect in then func, then window redirect won't happen
       // thanks https://stackoverflow.com/questions/54500755/response-undefined-for-302-status-axios
-      axios.post('http://localhost:8000/view', {
+      axios.post('/view', {
         ui: this.ui,
         apifile: this.apifile
       })
@@ -65,7 +65,7 @@ export default {
         });
     },
     getSupportedUIs() {
-      axios.get('http://localhost:8000/uis')
+      axios.get('/uis')
         .then(response => {
           this.uis = response.data;
           if (this.uis.length > 0) {
@@ -77,7 +77,7 @@ export default {
         });
     },
     getApiFiles() {
-      axios.get('http://localhost:8000/apifiles')
+      axios.get('/apifiles')
         .then(response => {
           this.apifiles = response.data;
           if (this.apifiles.length > 0) {
