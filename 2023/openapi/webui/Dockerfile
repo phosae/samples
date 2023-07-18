@@ -25,5 +25,5 @@ COPY /spec /static/spec
 USER 65532:65532
 EXPOSE 8000
 
-ENV SPEC_DIR=/static
+ENV STATIC_FILE_DIR=/static
 ENTRYPOINT ["/web-manager"]

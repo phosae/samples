@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -22,21 +24,35 @@ func init() {
 }
 
 func main() {
-	specDir := os.Getenv("SPEC_DIR")
-	if specDir == "" {
+	filedir := os.Getenv("STATIC_FILE_DIR")
+	if filedir == "" {
 		home, err := os.UserHomeDir()
 		if err == nil {
-			specDir = home
+			filedir = home
 		} else {
-			specDir = "."
+			filedir = "."
 		}
 	}
-	http.Handle("/", http.FileServer(http.Dir(specDir)))
-	log.Printf("serve fs %s\n", specDir)
 
-	http.Handle("/apifiles", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	if args := os.Args; len(args) > 1 {
+		if URL, err := url.Parse(args[len(args)-1]); err == nil {
+			if resp, err := http.Get(URL.String()); err == nil && resp.StatusCode/100 == 2 {
+				defer resp.Body.Close()
+				parts := strings.Split(URL.Path, "/")
+				name := parts[len(parts)-1]
+				if b, err := io.ReadAll(resp.Body); err == nil {
+					os.WriteFile(filepath.Join(filedir, "spec", name), b, 0666)
+				}
+			}
+		}
+	}
+
+	http.Handle("/", http.FileServer(http.Dir(filedir)))
+	log.Printf("serve fs %s\n", filedir)
+
+	http.Handle("/apifiles", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		var files []string
-		err := filepath.Walk(specDir, func(path string, info os.FileInfo, err error) error {
+		err := filepath.Walk(filepath.Join(filedir, "spec"), func(_ string, info os.FileInfo, err error) error {
 			if err == nil && apifileRegEx.MatchString(info.Name()) {
 				files = append(files, info.Name())
 			}
@@ -56,7 +72,7 @@ func main() {
 		w.Write(data)
 	}))
 
-	http.Handle("/uis", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/uis", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		var uis = []string{"elements", "rapidoc", "swagger", "redoc"}
 
 		w.Header().Set("Content-Type", "application/json")
