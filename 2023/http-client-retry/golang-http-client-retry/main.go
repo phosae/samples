@@ -57,28 +57,16 @@ func shouldRetry(resp *http.Response, err error) bool {
 		return statusCode >= 500 || statusCode == http.StatusTooManyRequests
 	}
 
-	if err, ok := err.(*url.Error); ok && err.Timeout() {
-		return true
-	}
-
-	if strings.Contains(err.Error(), "connection refused") {
-		return true
-	}
-
-	return IsProbableEOF(err)
-}
-
-// IsProbableEOF returns true if the given error resembles a connection termination
-// scenario that would justify assuming that the watch is empty.
-// These errors are what the Go http stack returns back to us which are general
-// connection closure errors (strongly correlated) and callers that need to
-// differentiate probable errors in connection behavior between normal "this is
-// disconnected" should use the method.
-func IsProbableEOF(err error) bool {
 	var uerr *url.Error
-	if errors.As(err, &uerr) {
-		err = uerr.Err
+	if !errors.As(err, &uerr) {
+		return false
 	}
+
+	if uerr.Timeout() {
+		return true
+	}
+
+	err = uerr.Err
 	msg := err.Error()
 	switch {
 	case err == io.EOF:
@@ -90,6 +78,8 @@ func IsProbableEOF(err error) bool {
 	case strings.Contains(msg, "http2: server sent GOAWAY and closed the connection"):
 		return true
 	case strings.Contains(msg, "connection reset by peer"):
+		return true
+	case strings.Contains(msg, "connection refused"):
 		return true
 	case strings.Contains(strings.ToLower(msg), "use of closed network connection"):
 		return true
