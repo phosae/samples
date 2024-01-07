@@ -31,7 +31,7 @@ wget -O trace.out http://localhost:8080/debug/pprof/trace?seconds=15
 3. Trace or Profile data via go test
 
 ```
-go test -trace trace.out -run ^TestDoParallelTask$ example.zeng.dev
+go test -trace trace.out -run ^TestDoParallelTask$ .
 ```
 
 ```
