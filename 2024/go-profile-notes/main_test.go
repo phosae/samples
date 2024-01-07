@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestDoParallelTask(t *testing.T) {
-	DoParallelTask()
+	DoTasks()
 }
 
 func BenchmarkCalculate(b *testing.B) {

@@ -40,11 +40,11 @@ func TraceManually() {
 	trace.Start(f)
 	defer trace.Stop()
 
-	DoParallelTask()
+	DoTasks()
 }
 
 func PprofManually() {
-	f, _ := os.Create("cpu.pprof")
+	f, _ := os.Create("cpu.prof")
 	defer f.Close()
 	rpprof.StartCPUProfile(f)
 	defer rpprof.StopCPUProfile()
@@ -52,7 +52,7 @@ func PprofManually() {
 	Calculate()
 }
 
-func DoParallelTask() {
+func DoTasks() {
 	var total int
 	var wg sync.WaitGroup
 
