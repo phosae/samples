@@ -45,6 +45,7 @@ analyze trace
 ```
 go tool trace -http :6060 trace.out
 ```
+![](./trace.jpg)
 
 analyze cpu profile
 
@@ -55,6 +56,8 @@ go tool pprof -http :6060 http://localhost:8080/debug/pprof/profile
 ```
 go tool pprof -http :6060 cpu.prof
 ```
+
+![](./cpuprofile_flame.jpg)
 
 see full documentation at
 - [net/http/pprof]
